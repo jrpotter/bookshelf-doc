@@ -97,12 +97,20 @@ def templateExtends {α β} {m} [Bind m] (base : α → m β) (new : m α) : m �
 
 def templateLiftExtends {α β} {m n} [Bind m] [MonadLift n m] (base : α → n β) (new : m α) : m β :=
   new >>= (monadLift ∘ base)
+
 /--
 Returns the doc-gen4 link to a module name.
 -/
 def moduleNameToLink (n : Name) : BaseHtmlM String := do
   let parts := n.components.map Name.toString
   return (← getRoot) ++ (parts.intersperse "/").foldl (· ++ ·) "" ++ ".html"
+
+/-
+Returns the doc-gen4 link to a module `NameExt`.
+-/
+def moduleNameExtToLink (n : NameExt) : BaseHtmlM String := do
+  let parts := n.name.components.map Name.toString
+  return (← getRoot) ++ (parts.intersperse "/").foldl (· ++ ·) "" ++ "." ++ n.ext.toString
 
 /--
 Returns the HTML doc-gen4 link to a module name.
