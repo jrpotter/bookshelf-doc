@@ -48,28 +48,34 @@ def getGithubBaseUrl (gitUrl : String) : String := Id.run do
 /--
 Obtain the Github URL of a project by parsing the origin remote.
 -/
-def getProjectGithubUrl (directory : System.FilePath := "." ) : IO String := do
-  let out ← IO.Process.output {
-    cmd := "git",
-    args := #["remote", "get-url", "origin"],
-    cwd := directory
-  }
-  if out.exitCode != 0 then
-    throw <| IO.userError <| s!"git exited with code {out.exitCode} while looking for the git remote in {directory}"
-  return out.stdout.trimRight
+def getProjectGithubUrl (directory : System.FilePath := ".") : IO String := do
+  match (<- IO.getEnv "GIT_ORIGIN_URL") with
+  | some url => return url
+  | none =>
+    let out ← IO.Process.output {
+      cmd := "git",
+      args := #["remote", "get-url", "origin"],
+      cwd := directory
+    }
+    if out.exitCode != 0 then
+      throw <| IO.userError <| s!"git exited with code {out.exitCode} while looking for the git remote in {directory}"
+    return out.stdout.trimRight
 
 /--
 Obtain the git commit hash of the project that is currently getting analyzed.
 -/
-def getProjectCommit (directory : System.FilePath := "." ) : IO String := do
-  let out ← IO.Process.output {
-    cmd := "git",
-    args := #["rev-parse", "HEAD"]
-    cwd := directory
-  }
-  if out.exitCode != 0 then
-    throw <| IO.userError <| s!"git exited with code {out.exitCode} while looking for the current commit in {directory}"
-  return out.stdout.trimRight
+def getProjectCommit (directory : System.FilePath := ".") : IO String := do
+  match (<- IO.getEnv "GIT_REVISION") with
+  | some rev => return rev
+  | none =>
+    let out ← IO.Process.output {
+      cmd := "git",
+      args := #["rev-parse", "HEAD"]
+      cwd := directory
+    }
+    if out.exitCode != 0 then
+      throw <| IO.userError <| s!"git exited with code {out.exitCode} while looking for the current commit in {directory}"
+    return out.stdout.trimRight
 
 def getGitUrl (pkg : Package) (lib : LeanLibConfig) (mod : Module) : IO String := do
   let baseUrl := getGithubBaseUrl (← getProjectGithubUrl pkg.dir)
