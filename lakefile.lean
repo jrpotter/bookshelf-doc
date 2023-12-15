@@ -12,16 +12,20 @@ lean_exe «doc-gen4» {
 }
 
 require CMark from git
-  "https://github.com/xubaiw/CMark.lean" @ "main"
+  "https://github.com/xubaiw/CMark.lean" @
+    "main"
 
-require «UnicodeBasic» from git
-  "https://github.com/fgdorais/lean4-unicode-basic" @ "main"
+require UnicodeBasic from git
+  "https://github.com/fgdorais/lean4-unicode-basic" @
+    "main"
 
 require Cli from git
-  "https://github.com/mhuisi/lean4-cli" @ "nightly"
+  "https://github.com/leanprover/lean4-cli" @
+    "main"
 
 require leanInk from git
-  "https://github.com/hargonix/LeanInk" @ "doc-gen"
+  "https://github.com/hargonix/LeanInk" @
+    "doc-gen"
 
 
 /--
