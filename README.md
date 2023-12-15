@@ -1,6 +1,18 @@
 # `doc-gen4`
 Document Generator for Lean 4
 
+---
+
+***Disclaimer***: This fork is tightly coupled to my
+[bookshelf](https://github.com/jrpotter/bookshelf) project. It makes the following
+changes:
+
+* Custom index page
+* Script to convert LaTeX files into PDFs (using `pdflatex`)
+* Modifications to show PDFs in the navbar
+
+---
+
 ## Usage
 `doc-gen4` is the easiest to use via its custom Lake facet, in order
 to do this you have to add it to your `lakefile.lean` like this:
