@@ -8,7 +8,7 @@ fi
 SRC_DIR="$1"
 BUILD_DIR="$2"
 
-cd "$SRC_DIR" || (>&2 echo "Could not cd to $SRC_DIR"; exit 1)
+cd "$SRC_DIR" || { >&2 echo "Could not cd to $SRC_DIR"; exit 1; }
 
 # We run this command twice to allow any cross-references to resolve correctly.
 # https://tex.stackexchange.com/questions/41539/does-hyperref-work-between-two-files
