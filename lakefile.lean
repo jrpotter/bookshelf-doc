@@ -92,6 +92,18 @@ def getGitUrl (pkg : Package) (lib : LeanLibConfig) (mod : Module) : IO String :
   let url := s!"{baseUrl}/blob/{commit}/{basePath}/{path}.lean"
   return url
 
+def runPdfLatex : BuildM PUnit := do
+  logInfo "Converting TeX to PDF"
+  let some docGen4 ← findPackage? `«doc-gen4»
+    | error "no doc-gen4 package found in workspace"
+  let pdfLatex := docGen4.srcDir / "run_pdflatex.sh"
+  let srcDir := (← getWorkspace).root.srcDir
+  let buildDir := (← getWorkspace).root.buildDir
+  proc {
+    cmd := pdfLatex.toString
+    args := #[srcDir.toString, buildDir.toString]
+  }
+
 module_facet docs (mod) : FilePath := do
   let some docGen4 ← findLeanExe? `«doc-gen4»
     | error "no doc-gen4 executable configuration found in workspace"
@@ -170,15 +182,7 @@ library_facet docs (lib) : FilePath := do
   coreJob.bindAsync fun _ coreInputTrace => do
     exeJob.bindAsync fun exeFile exeTrace => do
       moduleJobs.bindSync fun _ inputTrace => do
-        logInfo "Converting TeX to PDF"
-        let some docGen4 ← findPackage? `«doc-gen4»
-          | error "no doc-gen4 package found in workspace"
-        let pdfLatex := docGen4.srcDir / "run_pdflatex.sh"
-        let buildDir := (←getWorkspace).root.buildDir
-        proc {
-          cmd := pdfLatex.toString
-          args := #[buildDir.toString]
-        }
+        runPdfLatex
         let depTrace := mixTraceArray #[inputTrace, exeTrace, coreInputTrace]
         let trace ← buildFileUnlessUpToDate dataFile depTrace do
           logInfo "Documentation indexing"
